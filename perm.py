@@ -50,7 +50,7 @@ class PermPatch:
     
     def apply(self):
         for p, new_m in zip(self.fullpaths, self.st_modes):
-            p.lchmod(new_m)
+            p.chmod(new_m)
             
 
 def perm_import(dst_dir: Path, save_file: Path) -> PermPatch:
