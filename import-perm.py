@@ -7,10 +7,10 @@ from perm import perm_import
 
 parser = argparse.ArgumentParser()
 parser.add_argument('dst_directory', type=str,
-    help="Destination directory in which the imported permissions will be applied"
+    help="Directory whose permissions will be changed."
 )
 parser.add_argument('permission_save_file', type=str,
-    help="Pickle file that contains the permissions to import"
+    help="Pickle file containing the permissions to import into `dst_directory`."
 )
 args = parser.parse_args()
 

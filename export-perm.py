@@ -7,10 +7,10 @@ from perm import perm_export
 
 parser = argparse.ArgumentParser()
 parser.add_argument('src_directory', type=str,
-    help="Source directory of permissions"
+    help="Directory whose permissions will be copied into `permission_save_file`."
 )
 parser.add_argument('permission_save_file', type=str,
-    help="Pickle file in which the permissions must be exported"
+    help="Pickle file into which `src_directory` permissions will be exported."
 )
 args = parser.parse_args()
 
