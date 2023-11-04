@@ -23,12 +23,6 @@ class Exploration:
         return perm_dict
     
 
-def perm_export(src_dir: Path, save_file: Path):
-    perm_dict = Exploration(src_dir).get_perm_dict()
-    with open(save_file, mode='wb') as file:
-        pickle.dump(perm_dict, file)
-
-
 class PermPatch:
     def __init__(self):
         self.fullpaths: list[Path] = []
@@ -37,7 +31,7 @@ class PermPatch:
     def __len__(self) -> int:
         return len(self.fullpaths)
     
-    def append(self, p: Path, m: int):
+    def append(self, p: Path, m: int) -> None:
         self.fullpaths.append(p)
         self.st_modes.append(m)
     
@@ -48,10 +42,16 @@ class PermPatch:
             rows.append(f'[{filemode(old_m)}] -> [{filemode(new_m)}] {str(p)}')
         return '\n'.join(rows)
     
-    def apply(self):
+    def apply(self) -> None:
         for p, new_m in zip(self.fullpaths, self.st_modes):
             p.chmod(new_m)
-            
+
+
+def perm_export(src_dir: Path, save_file: Path) -> None:
+    perm_dict = Exploration(src_dir).get_perm_dict()
+    with open(save_file, mode='wb') as file:
+        pickle.dump(perm_dict, file)
+        
 
 def perm_import(dst_dir: Path, save_file: Path) -> PermPatch:
     current_perms = Exploration(dst_dir).get_perm_dict()
