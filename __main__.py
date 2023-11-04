@@ -43,7 +43,7 @@ parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(required=True)
 
 
-# permcopy export [-h] src_directory permission_save_file
+# permcp export [-h] src_directory permission_save_file
 parser_export = subparsers.add_parser(
     'export',
     help="Copies the permissions of a directory into a pickle file."
@@ -61,7 +61,7 @@ parser_export.add_argument(
 parser_export.set_defaults(command=command_export)
 
 
-# permcopy import [-h] dst_directory permission_save_file
+# permcp import [-h] dst_directory permission_save_file
 parser_import = subparsers.add_parser(
     'import',
     help="Applies to a directory the permissions saved into a pickle file."
