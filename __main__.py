@@ -4,7 +4,6 @@ from typing import Callable
 
 import argparse
 import pathlib
-import sys
 
 import perms_tools
 
