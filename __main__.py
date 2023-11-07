@@ -46,17 +46,17 @@ subparsers = parser.add_subparsers(required=True)
 # permcp export [-h] src_directory permission_save_file
 parser_export = subparsers.add_parser(
     'export',
-    help="Copies the permissions of a directory into a pickle file."
+    help="Copies the permissions of a directory into a pickle file"
 )
 parser_export.add_argument(
     'src_directory',
     type=str,
-    help="Directory whose permissions will be copied into `permission_save_file`."
+    help="Directory whose permissions will be copied into `permission_save_file`"
 )
 parser_export.add_argument(
     'permission_save_file',
     type=str,
-    help="Pickle file into which `src_directory` permissions will be exported."
+    help="Pickle file into which `src_directory` permissions will be exported"
 )
 parser_export.set_defaults(command=command_export)
 
@@ -64,17 +64,17 @@ parser_export.set_defaults(command=command_export)
 # permcp import [-h] dst_directory permission_save_file
 parser_import = subparsers.add_parser(
     'import',
-    help="Applies to a directory the permissions saved into a pickle file."
+    help="Applies to a directory the permissions saved into a pickle file"
 )
 parser_import.add_argument(
     'dst_directory',
     type=str,
-    help="Directory whose permissions will be changed."
+    help="Directory whose permissions will be changed"
 )
 parser_import.add_argument(
     'permission_save_file',
     type=str,
-    help="Pickle file containing the permissions to import into `dst_directory`."
+    help="Pickle file containing the permissions to import into `dst_directory`"
 )
 parser_import.set_defaults(command=command_import)
 
