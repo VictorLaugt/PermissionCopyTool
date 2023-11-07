@@ -3,7 +3,14 @@ import argparse
 import pathlib
 import sys
 
-import permtools
+import perms_tools
+
+def confirm_action(confirmation_message, cancelation_message, action):
+    if input(f'{confirmation_message} [y/n] ').lower() in ('o', 'y'):
+        action()
+    else:
+        print(cancelation_message)
+
 
 # ---- commands definitions
 def command_export(args):
@@ -15,7 +22,7 @@ def command_export(args):
     if not src.is_dir():
         sys.exit(f"Directory not found: {str(src)}")
 
-    permtools.perm_export(src, save_file)
+    perms_tools.perm_export(src, save_file)
 
 
 def command_import(args):
@@ -27,15 +34,19 @@ def command_import(args):
     if not dst.is_dir():
         sys.exit(f"Directory not found: {str(dst)}")
 
-    patch = permtools.perm_import(dst, save_file)
-
+    patch = perms_tools.perm_import(dst, save_file)
     print(patch)
-    confirmation = input("Proceed ? [y/n] ")
-    if confirmation.lower() not in ('o', 'y'):
-        print("nothing done")
-        sys.exit()
+    confirm_action("Proceed ?", "nothing done", lambda: patch.apply())
 
-    patch.apply()
+
+def command_auto(args): #TODO: tester la commande "auto"
+    directory = pathlib.Path(args.directory)
+    if not directory.is_dir():
+        sys.exit(f"Directory not found: {str(directory)}")
+    
+    patch = perms_tools.perm_auto_patch(directory)
+    print(patch)
+    confirm_action("Proceed ?", "nothing done", lambda: patch.apply())
 
 
 # ---- argument parsing
@@ -78,6 +89,18 @@ parser_import.add_argument(
 )
 parser_import.set_defaults(command=command_import)
 
+
+# permcp auto [-h] directory
+parser_auto = subparsers.add_parser(
+    'auto',
+    help="Automatically determines and applies new permissions to a directory"
+)
+parser_auto.add_argument(
+    'directory',
+    type=str,
+    help="Directory whose permissions will be changed"
+)
+parser_auto.set_defaults(command=command_auto)
 
 args = parser.parse_args()
 args.command(args)
