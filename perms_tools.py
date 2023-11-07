@@ -78,9 +78,15 @@ class PermPatch:
     def auto_fill(self, exploration: Exploration) -> None:
         def auto_perm(path):
             if path.is_file():
-                self.append(path, with_permissions(permissions(path), DEFAULT_FILE_PERMS))
+                mask = DEFAULT_FILE_PERMS
             elif path.is_dir():
-                self.append(path, with_permissions(permissions(path), DEFAULT_DIR_PERMS))
+                mask = DEFAULT_DIR_PERMS
+            else:
+                return
+            old_perm = permissions(path)
+            new_perm = with_permissions(old_perm, mask)
+            if new_perm != old_perm:
+                self.append(path, new_perm)
         exploration.explore(auto_perm)
     
     def __repr__(self) -> str:
