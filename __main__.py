@@ -25,7 +25,7 @@ def command_import(args):
     confirm_action("Proceed ?", "nothing done", lambda: patch.apply())
 
 
-def command_auto(args): #TODO: tester la commande "auto"    
+def command_auto(args):
     patch = perms_tools.perm_auto_patch(args.directory)
     print(patch)
     confirm_action("Proceed ?", "nothing done", lambda: patch.apply())
