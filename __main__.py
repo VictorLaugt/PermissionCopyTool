@@ -96,7 +96,9 @@ parser_auto = subparsers.add_parser(
 parser_auto.add_argument(
     'directory',
     type=path_checker(is_directory, lambda s: f'Directory not found "{s}"'),
-    help="Directory whose permissions will be changed"
+    help="Directory whose permissions will be changed",
+    nargs='?',
+    default=pathlib.Path()
 )
 parser_auto.set_defaults(command=command_auto)
 
