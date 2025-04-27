@@ -15,17 +15,18 @@ def permissions(path: Path) -> int:
 class Exploration:
     def __init__(self, root_dir: Path):
         self._root_dir = root_dir
-    
+
     @classmethod
     def _explore(cls, path: Path, callback: Callable[[Path], None]):
         callback(path)
         if path.is_dir() and os.access(path, os.R_OK):
             for subpath in path.iterdir():
-                cls._explore(subpath, callback)
-    
+                if not subpath.is_symlink():
+                    cls._explore(subpath, callback)
+
     def explore(self, callback: Callable[[Path], None]):
         return self._explore(self._root_dir, callback)
-    
+
     def get_paths(self) -> list[Path]:
         path_list = []
         def add_entry(path):
@@ -33,15 +34,15 @@ class Exploration:
 
         self._explore(self._root_dir, add_entry)
         return path_list
-            
+
     def get_paths_and_perms(self) -> dict[Path, int]:
         perm_dict = {}
         def add_entry(path):
             perm_dict[path.relative_to(self._root_dir)] = permissions(path)
-            
+
         self._explore(self._root_dir, add_entry)
         return perm_dict
-    
+
 
 # ---- permission management
 # Mask to retrieve everything except the permission section in the `st_mode`
@@ -67,14 +68,14 @@ class PermPatch:
     def __init__(self):
         self.fullpaths: list[Path] = []
         self.perms: list[int] = []
-    
+
     def __len__(self) -> int:
         return len(self.fullpaths)
-    
+
     def append(self, p: Path, m: int) -> None:
         self.fullpaths.append(p)
         self.perms.append(m)
-    
+
     def auto_fill(self, exploration: Exploration) -> None:
         def auto_perm(path):
             if path.is_file():
@@ -88,14 +89,14 @@ class PermPatch:
             if new_perm != old_perm:
                 self.append(path, new_perm)
         exploration.explore(auto_perm)
-    
+
     def __repr__(self) -> str:
         rows = []
         for p, new_m in zip(self.fullpaths, self.perms):
             old_m = permissions(p)
             rows.append(f'[{stat.filemode(old_m)}] -> [{stat.filemode(new_m)}] {str(p)}')
         return '\n'.join(rows)
-    
+
     def apply(self) -> None:
         for p, new_m in zip(self.fullpaths, self.perms):
             p.chmod(new_m)
@@ -106,13 +107,13 @@ def perm_export(src_dir: Path, save_file: Path) -> None:
     perm_dict = Exploration(src_dir).get_paths_and_perms()
     with open(save_file, mode='wb') as file:
         pickle.dump(perm_dict, file)
-        
+
 
 def perm_import(dst_dir: Path, save_file: Path) -> PermPatch:
     paths = Exploration(dst_dir).get_paths()
     with open(save_file, mode='rb') as file:
         imported_paths_and_perms = pickle.load(file)
-    
+
     patch = PermPatch()
     for path in imported_paths_and_perms.keys() & paths:
         fullpath = dst_dir.joinpath(path)
@@ -120,7 +121,7 @@ def perm_import(dst_dir: Path, save_file: Path) -> PermPatch:
         old_perm = permissions(fullpath)
         if new_perm != old_perm:
             patch.append(fullpath, new_perm)
-    
+
     return patch
 
 
